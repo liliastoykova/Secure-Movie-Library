@@ -74,6 +74,17 @@ def get_movie_by_title(title: str):
 
     return rows[0]
 
+def get_movie_by_title_and_year(title: str, release_year: int):
+    sql = """SELECT id
+                FROM movies
+                WHERE title = ? AND release_year = ?"""
+
+    rows = read_query(sql, (title, release_year))
+
+    if not rows:
+        return None
+
+    return rows[0][0]
 
 def update_movie(movie_id: int, title: str | None, director: str | None, release_year: int | None):
     sql = """UPDATE movies

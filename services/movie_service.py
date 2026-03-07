@@ -4,7 +4,7 @@ from repositories.movies_repository import *
 
 
 def create_new_movie(data: MovieCreate):
-    movie_exists = get_movie_by_title(data.title)
+    movie_exists = get_movie_by_title_and_year(data.title, data.release_year)
 
     if movie_exists:
         raise HTTPException(409, "Movie already exists")
@@ -32,6 +32,11 @@ def change_movie(movie_id: int, data: MovieUpdate):
     title = data.title if data.title is not None else movie.title
     director = data.director if data.director is not None else movie.director
     release_year = data.release_year if data.release_year is not None else movie.release_year
+
+    existing = get_movie_by_title_and_year(title, release_year)
+
+    if existing and existing != movie_id:
+        raise HTTPException(409, "Movie with this title and year already exists.")
 
     update_movie(movie_id, title, director, release_year)
 
