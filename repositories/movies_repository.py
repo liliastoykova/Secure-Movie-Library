@@ -21,7 +21,7 @@ def get_movies(search: str | None, sort: str | None) -> list[Movie]:
                 FROM movies"""
 
     if search:
-        rows =  read_query(search_sql, (search, ))
+        rows =  read_query(search_sql, (f"%{search}%",))
     elif sort == 'rating':
         rows = read_query(sort_sql)
     else:
@@ -53,11 +53,11 @@ def get_movie_by_id(id: int):
 
     row = rows[0]
 
-    movie = Movie(id=row['id'],
-                title=row['title'],
-                director=row['director'],
-                release_year=row['release_year'],
-                rating=row['rating']
+    movie = Movie(id=row[0],
+                title=row[1],
+                director=row[2],
+                release_year=row[3],
+                rating=row[4]
             )
 
     return movie
