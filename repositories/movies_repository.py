@@ -30,11 +30,11 @@ def get_movies(search: str | None, sort: str | None) -> list[Movie]:
     movies = []
 
     for row in rows:
-        movie = Movie(id=row['id'],
-              title=row['title'],
-              director=row['director'],
-              release_year=row['release_year'],
-              rating=row['rating']
+        movie = Movie(id=row[0],
+              title=row[1],
+              director=row[2],
+              release_year=row[3],
+              rating=row[4]
         )
         movies.append(movie)
 
