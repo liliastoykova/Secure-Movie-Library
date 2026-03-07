@@ -23,8 +23,8 @@ class MovieCreate(BaseModel):
     )
 
     title: str = Field(min_length=2, max_length=32)
-    director: str = Field(min_length=2, max_length=50)
-    release_year: int
+    director: str | None = Field(default=None, min_length=2, max_length=50)
+    release_year: int | None = None
 
     @field_validator('release_year')
     @classmethod
