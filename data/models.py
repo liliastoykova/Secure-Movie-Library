@@ -1,32 +1,74 @@
 from typing import Literal
-from pydantic import BaseModel, Field, EmailStr, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
+from utils.validate_password import validate_password_strength
+from utils.validate_year import validate_release_year
 
-import utils.validate_password
 
-
-class Movies(BaseModel):
+class Movie(BaseModel):
     id: int
     title: str = Field(min_length=2, max_length=32)
     director: str | None
     release_year: int | None
     rating: float | None
 
-class UserBase(BaseModel):
-    username: str = Field(min_length=2, max_length=10)
-
-class UserWithEmail(UserBase):
-    email: str = Field(
-        description="Valid email address, must be unique in the system",
-        examples=["john@example.com"]
+class MovieCreate(BaseModel):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "title": "Up",
+                "director": "Pete Docter",
+                "release_year": 2009
+            }
+        }
     )
 
-class UserCreate(UserWithEmail):
+    title: str = Field(min_length=2, max_length=32)
+    director: str = Field(min_length=2, max_length=50)
+    release_year: int
+
+    @field_validator('release_year')
+    @classmethod
+    def validate_year(cls, year):
+        return validate_release_year(year)
+
+class MovieUpdate(BaseModel):
+    title: str | None = Field(default=None,min_length=2, max_length=32)
+    director: str | None = Field(default=None,min_length=2, max_length=50)
+    release_year: int | None = None
+
+    @field_validator('release_year')
+    @classmethod
+    def validate_year(cls, year):
+        return validate_release_year(year)
+
+
+class UserBase(BaseModel):
+    username: str = Field(min_length=2,
+                          max_length=10,
+                          description="Unique username for the user. Cannot be changed after registration.",
+                          examples=["johndoe", "alice_2024"]
+                          )
+
+class UserCreate(UserBase):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "username": "lilia",
+                "password": "Securepass123!"
+            }
+        }
+    )
     password: str = Field(min_length=2, max_length=16)
 
     @field_validator('password')
     @classmethod
     def validate_password(cls, p: str):
-        return utils.validate_password.validate_password_strength(p)
+        return validate_password_strength(p)
 
+class User(BaseModel):
+    id: int
+    username: str = Field(min_length=2, max_length=10)
+    password: str
+    role: Literal["USER", "ADMIN"]
 
 
