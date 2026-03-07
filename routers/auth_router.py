@@ -9,7 +9,7 @@ from services.user_service import register_user
 
 auth_router = APIRouter(prefix="/auth")
 
-@auth_router.post("/login")
+@auth_router.post("/login", response_model=Token)
 def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     user = authenticate_user(form_data.username, form_data.password)
     if not user:

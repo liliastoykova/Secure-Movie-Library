@@ -8,7 +8,7 @@ from auth.jwt_handler import SECRET_KEY, ALGORITHM
 
 from repositories.users_repository import get_user_by_username
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
