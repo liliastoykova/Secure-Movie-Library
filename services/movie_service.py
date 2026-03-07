@@ -1,9 +1,14 @@
 from fastapi import HTTPException
 from data.models import MovieCreate, MovieUpdate
-from repositories.movies_repository import create_movie, get_movies, get_movie_by_id, update_movie, delete_movie
+from repositories.movies_repository import *
 
 
 def create_new_movie(data: MovieCreate):
+    movie_exists = get_movie_by_title(data.title)
+
+    if movie_exists:
+        raise HTTPException(409, "Movie already exists")
+
     movie_id = create_movie(data.title, data.director, data.release_year)
     return movie_id
 
