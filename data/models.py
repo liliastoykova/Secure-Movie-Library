@@ -48,13 +48,15 @@ class UserBase(BaseModel):
                           description="Unique username for the user. Cannot be changed after registration.",
                           examples=["johndoe", "alice_2024"]
                           )
+    role: Literal["USER", "ADMIN"]
 
 class UserCreate(UserBase):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "username": "lilia",
-                "password": "Securepass123!"
+                "password": "Securepass123!",
+                "role": "USER"
             }
         }
     )
