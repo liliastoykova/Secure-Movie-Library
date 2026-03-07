@@ -1,28 +1,30 @@
 from fastapi import APIRouter, status
+from fastapi.params import Depends
+from auth.dependencies import require_admin, get_current_user
 from services.movie_service import *
 from data.models import MovieCreate
 
 movie_router = APIRouter(prefix="/movies")
 
 @movie_router.post("/", status_code=status.HTTP_201_CREATED)
-def create_movies(data: MovieCreate):
+def create_movies(data: MovieCreate, user = Depends(require_admin)):
     movie_id = create_new_movie(data)
     return {"id": movie_id, "message": "Movie created."}
 
 @movie_router.get("")
-def get_all_movies(search: str | None = None, sort: str | None = None):
+def get_all_movies(search: str | None = None, sort: str | None = None, user = Depends(get_current_user)):
     return get_all(search, sort)
 
 @movie_router.get("/{movie_id}")
-def get_movies_by_id(movie_id: int):
+def get_movies_by_id(movie_id: int, user = Depends(get_current_user)):
     return get_by_id(movie_id)
 
 @movie_router.put("/{movie_id}")
-def update_movie(movie_id: int, data: MovieUpdate):
+def update_movie(movie_id: int, data: MovieUpdate, user = Depends(require_admin)):
     return change_movie(movie_id, data)
 
 @movie_router.delete("/{movie_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_movie(movie_id: int):
+def delete_movie(movie_id: int, user = Depends(require_admin)):
     return remove_movie(movie_id)
 
 

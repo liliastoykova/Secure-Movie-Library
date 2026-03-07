@@ -3,6 +3,12 @@ from pydantic import BaseModel, Field, field_validator, ConfigDict
 from utils.validate_password import validate_password_strength
 from utils.validate_year import validate_release_year
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: str | None = None
 
 class Movie(BaseModel):
     id: int
