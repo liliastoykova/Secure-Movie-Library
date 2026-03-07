@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from jwt.exceptions import InvalidTokenError
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from data.models import TokenData
-from jwt_handler import SECRET_KEY, ALGORITHM
+from auth.jwt_handler import SECRET_KEY, ALGORITHM
 
 from repositories.users_repository import get_user_by_username
 
