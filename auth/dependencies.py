@@ -28,7 +28,8 @@ def get_user_service(user_repo: UserRepository = Depends(get_user_repository)):
 def get_auth_service(user_repo: UserRepository = Depends(get_user_repository)):
     return AuthService(user_repo)
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
+                     user_repo: UserRepository = Depends(get_user_repository)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -42,7 +43,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         token_data = TokenData(username=username)
     except InvalidTokenError:
         raise credentials_exception
-    user = get_user_by_username(username=token_data.username)
+    user = user_repo.get_user_by_username(username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
