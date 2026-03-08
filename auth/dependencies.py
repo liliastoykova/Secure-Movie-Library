@@ -6,18 +6,27 @@ from fastapi.security import OAuth2PasswordBearer
 from data.models import TokenData
 from auth.jwt_handler import SECRET_KEY, ALGORITHM
 from repositories.movies_repository import MovieRepository
-
-from repositories.users_repository import get_user_by_username
+from repositories.users_repository import UserRepository
+from services.auth_service import AuthService
 from services.movie_service import MovieService
+from services.user_service import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def get_movie_repository():
     return MovieRepository()
 
+def get_user_repository():
+    return UserRepository()
+
 def get_movie_service(movie_repo: MovieRepository = Depends(get_movie_repository)):
     return MovieService(movie_repo)
 
+def get_user_service(user_repo: UserRepository = Depends(get_user_repository)):
+    return UserService(user_repo)
+
+def get_auth_service(user_repo: UserRepository = Depends(get_user_repository)):
+    return AuthService(user_repo)
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(

@@ -2,16 +2,18 @@ from datetime import timedelta
 from typing import Annotated
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
-from services.auth_service import authenticate_user
+from auth.dependencies import get_user_service, get_auth_service
+from services.auth_service import AuthService
 from auth.jwt_handler import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 from data.models import Token, User, UserCreate
-from services.user_service import register_user
+from services.user_service import UserService
 
 auth_router = APIRouter(prefix="/auth")
 
 @auth_router.post("/login", response_model=Token)
-def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
-    user = authenticate_user(form_data.username, form_data.password)
+def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+                           auth_service: AuthService = Depends(get_auth_service)) -> Token:
+    user = auth_service.authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -25,5 +27,6 @@ def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depen
     return Token(access_token=access_token, token_type="bearer")
 
 @auth_router.post("/register", response_model=User)
-def register(user_data: UserCreate):
-    return register_user(user_data)
+def register(user_data: UserCreate,
+             user_service: UserService = Depends(get_user_service)):
+    return user_service.register_user(user_data)
