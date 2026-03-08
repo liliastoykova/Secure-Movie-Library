@@ -1,14 +1,23 @@
 from typing import Annotated
 import jwt
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, HTTPException, status
 from jwt.exceptions import InvalidTokenError
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from data.models import TokenData
 from auth.jwt_handler import SECRET_KEY, ALGORITHM
+from repositories.movies_repository import MovieRepository
 
 from repositories.users_repository import get_user_by_username
+from services.movie_service import MovieService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+def get_movie_repository():
+    return MovieRepository()
+
+def get_movie_service(movie_repo: MovieRepository = Depends(get_movie_repository)):
+    return MovieService(movie_repo)
+
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
