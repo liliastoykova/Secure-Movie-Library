@@ -39,7 +39,7 @@ class MovieService:
         existing = self.movie_repo.get_movie_by_title_and_year(title, release_year)
 
         if existing and existing != movie_id:
-            raise HTTPException(409, "Movie with this title and year already exists.")
+            raise HTTPException(status_code=409, detail="Movie with this title and year already exists.")
 
         self.movie_repo.update_movie(movie_id, title, director, release_year)
 

@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from auth.hashing import get_password_hash
 from data.models import UserCreate
 from repositories.users_repository import UserRepository
 
@@ -14,6 +15,8 @@ class UserService:
                 detail="Username already taken. Please choose a different username."
             )
         user_data.role = "USER"
+
+        user_data.password = get_password_hash(user_data.password)
 
         self.user_repo.create_user(user_data)
 

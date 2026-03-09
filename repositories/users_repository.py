@@ -1,4 +1,3 @@
-from auth.hashing import get_password_hash
 from data.database import insert_query, read_query
 from data.models import UserCreate, User
 
@@ -7,9 +6,8 @@ class UserRepository:
     def create_user(self, user_data: UserCreate):
         sql = """INSERT INTO users (username, password, role)
                     VALUES (?, ?, ?)"""
-        hashed = get_password_hash(user_data.password)
 
-        return insert_query(sql, (user_data.username, hashed, user_data.role))
+        return insert_query(sql, (user_data.username, user_data.password, user_data.role))
 
     def get_user_by_username(self, username: str):
         sql = """SELECT id, username, password, role
