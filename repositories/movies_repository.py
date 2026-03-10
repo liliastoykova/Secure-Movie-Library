@@ -12,7 +12,7 @@ class MovieRepository:
     def get_movies(self, search: str | None, sort: str | None) -> list[Movie]:
         sort_sql = """SELECT id, title, director, release_year, rating 
                         FROM movies
-                        ORDER BY rating DESC"""
+                        ORDER BY rating IS NULL, rating DESC"""
 
         search_sql = """SELECT id, title, director, release_year, rating
                         FROM movies
