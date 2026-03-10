@@ -3,11 +3,11 @@ from data.models import Movie
 
 class MovieRepository:
 
-    def create_movie(self, title: str, director: str, release_year: int):
-        sql = """INSERT INTO movies (title, director, release_year)
-                VALUES (?, ?, ?)"""
+    def create_movie(self, title: str, director: str, release_year: int, rating: float):
+        sql = """INSERT INTO movies (title, director, release_year, rating)
+                VALUES (?, ?, ?, ?)"""
 
-        return insert_query(sql, (title, director, release_year))
+        return insert_query(sql, (title, director, release_year, rating))
 
     def get_movies(self, search: str | None, sort: str | None) -> list[Movie]:
         sort_sql = """SELECT id, title, director, release_year, rating 
@@ -98,5 +98,11 @@ class MovieRepository:
         sql = """DELETE FROM movies WHERE id = ?"""
 
         update_query(sql, (movie_id, ))
+
+    def update_movie_rating(self, movie_id, rating):
+        sql = """UPDATE movies SET rating = ? WHERE id = ?"""
+
+        update_query(sql, (rating, movie_id))
+
 
 

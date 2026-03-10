@@ -3,14 +3,20 @@ from fastapi.params import Depends
 from auth.dependencies import require_admin, get_current_user, get_movie_service
 from services.movie_service import *
 from data.models import MovieCreate
+from fastapi import BackgroundTasks
 
 movie_router = APIRouter(prefix="/movies")
 
 @movie_router.post("/", status_code=status.HTTP_201_CREATED)
 def create_movies(data: MovieCreate,
+                  background_tasks: BackgroundTasks,
                   user = Depends(require_admin),
                   movie_service: MovieService = Depends(get_movie_service)):
+
     movie_id = movie_service.create_new_movie(data)
+
+    background_tasks.add_task(movie_service.enrich_movie_rating, movie_id, data.title)
+
     return {"id": movie_id, "message": "Movie created."}
 
 @movie_router.get("")

@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from data.models import MovieCreate, MovieUpdate
 from repositories.movies_repository import *
+from services.rating_service import get_rating
 
 class MovieService:
     def __init__(self, movie_repo: MovieRepository):
@@ -12,8 +13,14 @@ class MovieService:
         if movie_exists:
             raise HTTPException(409, "Movie already exists")
 
-        movie_id = self.movie_repo.create_movie(data.title, data.director, data.release_year)
+        movie_id = self.movie_repo.create_movie(data.title, data.director, data.release_year, None)
         return movie_id
+
+    def enrich_movie_rating(self, movie_id: int, title: str):
+        rating = get_rating(title)
+
+        if rating:
+            self.movie_repo.update_movie_rating(movie_id, rating)
 
     def get_all(self, search: str | None, sort: str | None):
         return self.movie_repo.get_movies(search, sort)
